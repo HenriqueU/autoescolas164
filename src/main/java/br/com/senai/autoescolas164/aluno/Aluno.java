@@ -1,4 +1,4 @@
-package br.com.senai.autoescolas164.instrutor;
+package br.com.senai.autoescolas164.aluno;
 
 import br.com.senai.autoescolas164.endereco.Endereco;
 import jakarta.persistence.*;
@@ -7,49 +7,42 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name="Instrutor")
-@Table(name="instrutores")
+@Entity(name="Aluno")
+@Table(name="alunos")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode(of="id")
-public class Instrutor {
+public class Aluno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    private String cpf;
     private String email;
     private String telefone;
-    private String cnh;
     private boolean ativo = true;
-
-    @Enumerated(EnumType.STRING)
-    private Especialidade especialidade;
 
     @Embedded
     private Endereco endereco;
 
-    public Instrutor(DadosCadastroInstrutor dados) {
+    public Aluno(DadosCadastroAluno dados) {
         this.nome = dados.getNome();
+        this.cpf = dados.getCpf();
         this.email = dados.getEmail();
         this.telefone = dados.getTelefone();
-        this.cnh = dados.getCnh();
-        this.especialidade = dados.getEspecialidade();
         this.endereco = new Endereco(dados.getEndereco());
     }
 
-    public void atualizar(DadosAtualizacaoInstrutor dados) {
+    public void atualizar(DadosAtualizacaoAluno dados) {
         if (dados.nome() != null && !dados.nome().isBlank()) {
             this.nome = dados.nome();
         }
-        if (dados.email() != null && !dados.email().isBlank()) {
+        if (dados.email() != null && !dados.nome().isBlank()) {
             this.email = dados.email();
         }
-        if (dados.telefone() != null && !dados.telefone().isBlank()) {
+        if (dados.telefone() != null && !dados.nome().isBlank()) {
             this.telefone = dados.telefone();
-        }
-        if (dados.especialidade() != null) {
-            this.especialidade = dados.especialidade();
         }
         if (dados.endereco() != null) {
             this.endereco.atualizar(dados.endereco());

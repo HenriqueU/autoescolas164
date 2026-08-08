@@ -1,10 +1,9 @@
-CREATE TABLE IF NOT EXISTS instrutores(
+CREATE TABLE IF NOT EXISTS alunos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(12) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    telefone VARCHAR(20) NOT NULL ,
-    cnh VARCHAR(11) NOT NULL UNIQUE,
-    especialidade VARCHAR(10) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
     cep VARCHAR(10) NOT NULL,
     logradouro VARCHAR(100) NOT NULL,
     numero VARCHAR(20),
@@ -12,4 +11,4 @@ CREATE TABLE IF NOT EXISTS instrutores(
     bairro VARCHAR(100) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
     uf VARCHAR(2) NOT NULL
-);
+)

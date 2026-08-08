@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record DadosInstrutor(
+public record DadosCadastroInstrutor(
         @NotBlank
         String nome,
 
@@ -29,7 +29,7 @@ public record DadosInstrutor(
         DadosEndereco endereco
 ) {
 
-    public DadosInstrutor(String nome, String email, String telefone, String cnh, Especialidade especialidade, DadosEndereco endereco) {
+    public DadosCadastroInstrutor(String nome, String email, String telefone, String cnh, Especialidade especialidade, DadosEndereco endereco) {
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
