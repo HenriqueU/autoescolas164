@@ -1,4 +1,4 @@
-package br.com.senai.autoescolas164.instrutor;
+package br.com.senai.autoescolas164.domain.instrutor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

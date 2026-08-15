@@ -1,4 +1,4 @@
-package br.com.senai.autoescolas164.aluno;
+package br.com.senai.autoescolas164.domain.aluno;
 
 public record DadosListagemAluno(Long id, String nome, String email) {
 

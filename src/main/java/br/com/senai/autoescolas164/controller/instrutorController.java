@@ -1,6 +1,6 @@
 package br.com.senai.autoescolas164.controller;
 
-import br.com.senai.autoescolas164.instrutor.*;
+import br.com.senai.autoescolas164.domain.instrutor.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

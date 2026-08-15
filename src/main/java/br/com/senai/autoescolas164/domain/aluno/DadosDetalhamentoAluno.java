@@ -1,6 +1,6 @@
-package br.com.senai.autoescolas164.aluno;
+package br.com.senai.autoescolas164.domain.aluno;
 
-import br.com.senai.autoescolas164.endereco.Endereco;
+import br.com.senai.autoescolas164.domain.endereco.Endereco;
 
 public record DadosDetalhamentoAluno(Long id, String nome, String cpf, String email, String telefone, Endereco endereco) {
 
