@@ -32,7 +32,7 @@ public class AlunoService {
 
     //Get by ID
     @Transactional(readOnly = true)
-    public @Nullable DadosDetalhamentoAluno detalharInstrutor(Long id) {
+    public @Nullable DadosDetalhamentoAluno detalharAluno(Long id) {
         Aluno aluno = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do aluno informado não existe!"));
         return new DadosDetalhamentoAluno(aluno);
     }
@@ -46,6 +46,7 @@ public class AlunoService {
         return new DadosDetalhamentoAluno(aluno);
     }
 
+    //Delete
     @Transactional
     public void excluirAluno(Long id) {
         Aluno aluno = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do aluno informado não existe!"));

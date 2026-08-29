@@ -1,6 +1,7 @@
 package br.com.senai.autoescolas164.controller;
 
 import br.com.senai.autoescolas164.domain.usuario.*;
+import br.com.senai.autoescolas164.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class usuarioController {
 
-    private final UsuarioRepository service;
+    private final UsuarioService service;
 
     @PostMapping
     public ResponseEntity<DadosDetalhamentoUsuario> cadastrarUsuario(@RequestBody @Valid DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder) {
@@ -28,34 +29,27 @@ public class usuarioController {
         return ResponseEntity.created(uri).body(dto);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<DadosListagemUsuario>> listarUsuarios(@PageableDefault(size=10, sort="login") Pageable paginacao) {
-        return ResponseEntity.ok(service.listarUsuarios(paginacao));
-    }
+    //@GetMapping
+    //public ResponseEntity<Page<DadosListagemUsuario>> listarUsuarios(@PageableDefault(size=10, sort="login") Pageable paginacao) {
+    //    return ResponseEntity.ok(service.listarUsuarios(paginacao));
+    //}
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public ResponseEntity<DadosDetalhamentoUsuario> detalharUsuario(@PathVariable Long id) {
-        Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do usuário informado não existe!"));
-        DadosDetalhamentoUsuario dto = new DadosDetalhamentoUsuario(usuario);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(service.detalharUsuario(id));
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity<DadosDetalhamentoUsuario> atualizarUsuario(@RequestBody @Valid DadosAtualizacaoUsuario dados) {
-        Usuario usuario = repository.findById(dados.id()).orElseThrow(() -> new RuntimeException("ID do usuário informado não existe!"));
-        usuario.atualizar(dados);
-        repository.save(usuario);
-        return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
+        return ResponseEntity.ok(service.atualizarUsuario(dados));
     }
 
     @DeleteMapping("/id")
     @Transactional
     public ResponseEntity<Void> excluirUsuario(@PathVariable Long id) {
-        Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do usuário informado não existe!"));
-        usuario.excluir();
-        repository.save(usuario);
+        service.excluirUsuario(id);
         return ResponseEntity.noContent().build();
     }
 }

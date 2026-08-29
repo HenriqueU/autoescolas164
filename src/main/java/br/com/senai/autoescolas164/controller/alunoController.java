@@ -36,7 +36,7 @@ public class alunoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<DadosDetalhamentoAluno> detalharAluno(@PathVariable Long id) {
-        return ResponseEntity.ok(service.detalharInstrutor(id));
+        return ResponseEntity.ok(service.detalharAluno(id));
     }
 
     @PutMapping
