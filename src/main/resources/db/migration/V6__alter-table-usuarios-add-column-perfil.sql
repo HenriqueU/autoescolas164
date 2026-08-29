@@ -1,0 +1,1 @@
+ALTER TABLE usuarios ADD perfil VARCHAR(20) DEFAULT "USER";

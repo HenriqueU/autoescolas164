@@ -25,7 +25,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer(ISSUER)
                     .withSubject(usuario.getLogin())
-                    .withExpiresAt(dataExpiracao()) //Faz com que o token expire na data especificada
+                    .withExpiresAt(dataExpiracao()) //Faz com que o ‘token’ expire na data especificada
                     .sign(algorithm);
         } catch (JWTCreationException ex){
             throw new RuntimeException("Erro ao gerar o Token JWT!", ex);

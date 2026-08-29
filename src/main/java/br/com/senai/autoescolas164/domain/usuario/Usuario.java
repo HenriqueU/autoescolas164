@@ -1,9 +1,7 @@
 package br.com.senai.autoescolas164.domain.usuario;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,9 +28,32 @@ public class Usuario implements UserDetails {
     private String login;
     private String senha;
 
+    @Enumerated(EnumType.STRING)
+    private Role perfil; //Informa se o Usuário é "comum" (USER) ou "administrador" (ADMIN)
+
+    private boolean ativo = true;
+
+    public Usuario(DadosCadastroUsuario dados) {
+        this.login = dados.getLogin();
+        this.senha = dados.getSenha();
+        this.perfil = dados.getPerfil();
+    }
+
+    public void atualizar(DadosAtualizacaoUsuario dados) {
+        if (dados.login() != null && !dados.login().isBlank()) {
+            this.login = dados.login();
+        }
+        if (dados.senha() != null && !dados.login().isBlank()) {
+            this.senha = dados.senha();
+        }
+        if (dados.perfil() != null && !dados.login().isBlank()) {
+            this.perfil = dados.perfil();
+        }
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
     }
 
     @Override
@@ -63,5 +84,9 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void excluir() {
+        this.ativo = true;
     }
 }
