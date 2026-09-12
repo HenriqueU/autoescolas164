@@ -3,6 +3,8 @@ package br.com.senai.autoescolas164.application.service;
 import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAgendamento;
 import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosDetalhamentoAgendamento;
 import br.com.senai.autoescolas164.adapter.out.repository.InstrucaoRepository;
+import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
+import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrutorEntity;
 import br.com.senai.autoescolas164.application.core.domain.Instrucao;
 import br.com.senai.autoescolas164.exception.type.InstrucaoNotFound;
 import br.com.senai.autoescolas164.exception.type.ValidacaoException;
@@ -38,8 +40,8 @@ public class AgendaDeInstrucoes {
         //Validações
         validadoresAgendamento.forEach(validador -> validador.validar(dados));
 
-        Aluno aluno = alunoRepository.getReferenceById(dados.idAluno());
-        Instrutor instrutor = escolherInstrutor(dados);
+        AlunoEntity aluno = alunoRepository.getReferenceById(dados.idAluno());
+        InstrutorEntity instrutor = escolherInstrutor(dados);
         if (instrutor == null) {
             throw new ValidacaoException("Não existe instrutor disponível para a dara/hora informada");
         }

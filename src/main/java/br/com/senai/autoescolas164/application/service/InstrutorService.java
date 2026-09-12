@@ -27,7 +27,7 @@ public class InstrutorService {
     public DadosDetalhamentoInstrutor cadastrarInstrutor(DadosCadastroInstrutor dados) {
         Instrutor instrutor = mapper.toDomain(dados);
         Instrutor salvo = repository.save(instrutor);
-        return new DadosDetalhamentoInstrutor(salvo);
+        return mapper.toDetailDto(salvo);
     }
 
     //Get
@@ -35,14 +35,14 @@ public class InstrutorService {
     public @Nullable Page<DadosListagemInstrutor> listarInstrutores(Pageable paginacao) {
         return repository
                 .findAllByAtivoTrue(paginacao)
-                .map(DadosListagemInstrutor::new);
+                .map(mapper::toListDto);
     }
 
     //Get by ID
     @Transactional(readOnly = true)
     public @Nullable DadosDetalhamentoInstrutor detalharInstrutor(Long id) {
         Instrutor instrutor = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe"));
-        return new DadosDetalhamentoInstrutor(instrutor);
+        return mapper.toDetailDto(instrutor);
     }
 
     //Put
@@ -57,7 +57,7 @@ public class InstrutorService {
                 enderecoMapper.toEndereco(dados.endereco())
         );
         Instrutor salvo = repository.save(instrutor);
-        return new DadosDetalhamentoInstrutor(salvo);
+        return mapper.toDetailDto(salvo);
     }
 
     //Delete

@@ -55,10 +55,6 @@ public record DadosCadastroInstrutor(
         return especialidade;
     }
 
-    public String getCnh() {
-        return cnh;
-    }
-
     public DadosEndereco getEndereco() {
         return endereco;
     }

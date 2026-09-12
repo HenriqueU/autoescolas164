@@ -35,10 +35,6 @@ public record DadosCadastroAluno(
         return nome;
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-
     public String getEmail() {
         return email;
     }

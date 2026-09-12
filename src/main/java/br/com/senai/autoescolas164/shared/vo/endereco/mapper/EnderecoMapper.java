@@ -17,4 +17,16 @@ public class EnderecoMapper {
                 dados.uf()
         );
     }
+
+    public DadosEndereco toDto(Endereco endereco) {
+        return new DadosEndereco(
+                endereco.getCep(),
+                endereco.getLogradouro(),
+                endereco.getNumero(),
+                endereco.getComplemento(),
+                endereco.getBairro(),
+                endereco.getCidade(),
+                endereco.getUf()
+        );
+    }
 }

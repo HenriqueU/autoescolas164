@@ -1,53 +1,76 @@
 package br.com.senai.autoescolas164.application.core.domain;
 
-import br.com.senai.autoescolas164.adapter.in.controller.request.aluno.DadosAtualizacaoAluno;
-import br.com.senai.autoescolas164.adapter.in.controller.request.aluno.DadosCadastroAluno;
 import br.com.senai.autoescolas164.shared.vo.endereco.Endereco;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity(name="Aluno")
-@Table(name="alunos")
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@EqualsAndHashCode(of="id")
 public class Aluno {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
     private String cpf;
     private String email;
     private String telefone;
     private boolean ativo = true;
-
-    @Embedded
     private Endereco endereco;
 
-    public Aluno(DadosCadastroAluno dados) {
-        this.nome = dados.getNome();
-        this.cpf = dados.getCpf();
-        this.email = dados.getEmail();
-        this.telefone = dados.getTelefone();
-        this.endereco = new Endereco(dados.getEndereco());
+    public Aluno() {
     }
 
-    public void atualizar(DadosAtualizacaoAluno dados) {
-        if (dados.nome() != null && !dados.nome().isBlank()) {
-            this.nome = dados.nome();
+    public Aluno(String nome, String cpf, String email, String telefone, Endereco endereco) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.telefone = telefone;
+        this.endereco = endereco;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void atualizar(String nome, String email, String telefone, Endereco endereco) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
         }
-        if (dados.email() != null && !dados.nome().isBlank()) {
-            this.email = dados.email();
+        if (email != null && !email.isBlank()) {
+            this.email = email;
         }
-        if (dados.telefone() != null && !dados.nome().isBlank()) {
-            this.telefone = dados.telefone();
+        if (telefone != null && !telefone.isBlank()) {
+            this.telefone = telefone;
         }
-        if (dados.endereco() != null) {
-            this.endereco.atualizar(dados.endereco());
+        if (endereco != null) {
+            this.endereco.atualizar(
+                    endereco.getCep(),
+                    endereco.getLogradouro(),
+                    endereco.getNumero(),
+                    endereco.getComplemento(),
+                    endereco.getBairro(),
+                    endereco.getCidade(),
+                    endereco.getUf()
+            );
         }
     }
 
