@@ -1,10 +1,16 @@
 package br.com.senai.autoescolas164.application.service;
 
+import br.com.senai.autoescolas164.adapter.in.controller.mapper.InstrucaoMapper;
 import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAgendamento;
+import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAtualizacaoAgendamento;
 import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosDetalhamentoAgendamento;
+import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosListagemAgendamento;
 import br.com.senai.autoescolas164.adapter.out.repository.InstrucaoRepository;
 import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
 import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrutorEntity;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.AlunoEntityMapper;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.InstrucaoEntityMapper;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.InstrutorEntityMapper;
 import br.com.senai.autoescolas164.application.core.domain.Instrucao;
 import br.com.senai.autoescolas164.exception.type.InstrucaoNotFound;
 import br.com.senai.autoescolas164.exception.type.ValidacaoException;
@@ -16,6 +22,9 @@ import br.com.senai.autoescolas164.application.core.domain.Instrutor;
 import br.com.senai.autoescolas164.exception.type.InstrutorNotFoundException;
 import br.com.senai.autoescolas164.adapter.out.repository.InstrutorRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +37,11 @@ public class AgendaDeInstrucoes {
     private final InstrutorRepository instrutorRepository;
     private final InstrucaoRepository repository;
     private final List<ValidadorAgendamento> validadoresAgendamento;
+    private final InstrutorEntityMapper instrutorEntityMapper;
+    private final AlunoEntityMapper alunoEntityMapper;
+    private final InstrucaoMapper mapper;
 
+    //POST
     public DadosDetalhamentoAgendamento agendar(DadosAgendamento dados) {
         if (!alunoRepository.existsById(dados.idAluno())) {
             throw new AlunoNotFoundException("ID do aluno informado não existe!");
@@ -40,12 +53,18 @@ public class AgendaDeInstrucoes {
         //Validações
         validadoresAgendamento.forEach(validador -> validador.validar(dados));
 
-        AlunoEntity aluno = alunoRepository.getReferenceById(dados.idAluno());
-        InstrutorEntity instrutor = escolherInstrutor(dados);
+        Aluno aluno = alunoRepository.getReferenceById(dados.idAluno());
+        Instrutor instrutor = escolherInstrutor(dados);
         if (instrutor == null) {
             throw new ValidacaoException("Não existe instrutor disponível para a dara/hora informada");
         }
-        Instrucao instrucao = new Instrucao(null, aluno, instrutor, dados.dataHora(), true);
+        Instrucao instrucao = new Instrucao(
+                null,
+                alunoEntityMapper.toEntity(aluno),
+                instrutorEntityMapper.toEntity(instrutor),
+                dados.dataHora(),
+                true
+        );
         Instrucao salva = repository.save(instrucao);
         return new DadosDetalhamentoAgendamento(salva);
     }
@@ -63,6 +82,22 @@ public class AgendaDeInstrucoes {
         );
     }
 
+    //GET
+    @Transactional
+    public @Nullable Page<DadosDetalhamentoAgendamento> listarAgendamento(Pageable paginacao) {
+        return repository.findAllByAtivoTrue(paginacao).map(mapper::toDetailDto);
+    }
+
+    //GET BY ID
+    @Transactional(readOnly = true)
+    public @Nullable DadosDetalhamentoAgendamento detalharAgendamento(Long id) {
+        Instrucao instrucao = repository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("ID do agendamento não existe"));
+        return mapper.toDetailDto(instrucao);
+    }
+
+    //DELETE
     @Transactional
     public void excluirInstrucao(Long id) {
         Instrucao instrucao = repository.findById(id).orElseThrow(() -> new InstrucaoNotFound("Agendamento não encontrado!"));

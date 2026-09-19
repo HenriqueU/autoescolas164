@@ -4,6 +4,7 @@ import br.com.senai.autoescolas164.shared.vo.endereco.Endereco;
 import jakarta.persistence.*;
 
 public class Aluno {
+
     private Long id;
     private String nome;
     private String cpf;

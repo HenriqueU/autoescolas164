@@ -5,6 +5,8 @@ import br.com.senai.autoescolas164.adapter.out.repository.mapper.InstrucaoEntity
 import br.com.senai.autoescolas164.adapter.out.repository.persistence.InstrucaoJpaRepository;
 import br.com.senai.autoescolas164.application.core.domain.Instrucao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -39,5 +41,10 @@ public class InstrucaoRepositoryImplements implements InstrucaoRepository {
         return jpaRepository
                 .findById(id)
                 .map(entityMapper::toDomain);
+    }
+
+    @Override
+    public Page<Instrucao> findAllByAtivoTrue(Pageable paginacao) {
+        return jpaRepository.findAllByAtivoTrue(paginacao).map(entityMapper::toDomain);
     }
 }

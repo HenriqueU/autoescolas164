@@ -24,7 +24,7 @@ public class TokenService {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer(ISSUER)
-                    .withSubject(usuario.getLogin())
+                    .withSubject(usuario.getUsername())
                     .withExpiresAt(dataExpiracao()) //Faz com que o ‘token’ expire na data especificada
                     .sign(algorithm);
         } catch (JWTCreationException ex){

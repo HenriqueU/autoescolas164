@@ -1,5 +1,6 @@
 package br.com.senai.autoescolas164.adapter.out.repository;
 
+import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
 import br.com.senai.autoescolas164.application.core.domain.Aluno;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

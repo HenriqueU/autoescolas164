@@ -5,6 +5,7 @@ import br.com.senai.autoescolas164.shared.vo.enums.Especialidade;
 import jakarta.persistence.*;
 
 public class Instrutor {
+
     private Long id;
     private String nome;
     private String email;

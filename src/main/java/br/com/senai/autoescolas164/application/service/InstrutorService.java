@@ -41,14 +41,18 @@ public class InstrutorService {
     //Get by ID
     @Transactional(readOnly = true)
     public @Nullable DadosDetalhamentoInstrutor detalharInstrutor(Long id) {
-        Instrutor instrutor = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe"));
+        Instrutor instrutor = repository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe"));
         return mapper.toDetailDto(instrutor);
     }
 
     //Put
     @Transactional
     public DadosDetalhamentoInstrutor atualizarInstrutor(DadosAtualizacaoInstrutor dados) {
-        Instrutor instrutor = repository.findById(dados.id()).orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe!"));
+        Instrutor instrutor = repository
+                .findById(dados.id())
+                .orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe!"));
         instrutor.atualizar(
                 dados.nome(),
                 dados.email(),

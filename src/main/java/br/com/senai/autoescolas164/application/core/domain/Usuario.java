@@ -16,40 +16,32 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "Usuario")
-@Table(name = "usuarios")
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@EqualsAndHashCode(of = "id")
 public class Usuario implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String login;
     private String senha;
-
-    @Enumerated(EnumType.STRING)
     private Role perfil; //Informa se o Usuário é "comum" (USER) ou "administrador" (ADMIN)
-
     private boolean ativo = true;
 
-    public Usuario(DadosCadastroUsuario dados) {
-        this.login = dados.getLogin();
-        this.senha = dados.getSenha();
-        this.perfil = dados.getPerfil();
+    public Usuario() {
     }
 
-    public void atualizar(DadosAtualizacaoUsuario dados) {
-        if (dados.login() != null && !dados.login().isBlank()) {
-            this.login = dados.login();
+    public Usuario(String login, String senha, Role perfil) {
+        this.login = login;
+        this.senha = senha;
+        this.perfil = perfil;
+    }
+
+    public void atualizar(String login, String senha, Role perfil) {
+        if (login != null && !login.isBlank()) {
+            this.login = login;
         }
-        if (dados.senha() != null && !dados.login().isBlank()) {
-            this.senha = dados.senha();
+        if (senha != null && !senha.isBlank()) {
+            this.senha = senha;
         }
-        if (dados.perfil() != null && !dados.login().isBlank()) {
-            this.perfil = dados.perfil();
+        if (perfil != null && !login.isBlank()) {
+            this.perfil = perfil;
         }
     }
 
@@ -58,15 +50,19 @@ public class Usuario implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
     }
 
-    @Override
-    public @Nullable String getPassword() {
-        return senha;
-    }
+    public Long getId() { return id; }
 
     @Override
     public String getUsername() {
         return login;
     }
+
+    @Override
+    public @Nullable String getPassword() {
+        return senha;
+    }
+
+    public Role getPerfil() { return perfil; }
 
     @Override
     public boolean isAccountNonExpired() {

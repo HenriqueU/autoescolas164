@@ -2,6 +2,7 @@ package br.com.senai.autoescolas164.application.port.in;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 
 //Porta de Entrada
 
