@@ -5,6 +5,8 @@ import br.com.senai.autoescolas164.exception.type.ValidacaoException;
 import br.com.senai.autoescolas164.exception.type.AlunoNotFoundException;
 import br.com.senai.autoescolas164.exception.type.InstrutorNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @RestControllerAdvice
 public class TratadorGlobalErros {
+    private static final Logger log = LoggerFactory.getLogger(TratadorGlobalErros.class);
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Void> tratarNotFound() {
@@ -52,6 +55,7 @@ public class TratadorGlobalErros {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<DadosException> tratarErroGenerico(Exception e) {
+        log.error("Erro inesperado: ", e);
         return ResponseEntity.internalServerError().body(new DadosException(e.getMessage()));
     }
 
@@ -59,6 +63,10 @@ public class TratadorGlobalErros {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<DadosBadRequest>> tratarBadRequest(MethodArgumentNotValidException e) {
+        log.warn(
+                "Erro de validação. Campos inválidos: {}",
+                e.getFieldErrors().stream().map(FieldError::getField).toList()
+        );
         List<FieldError> erros = e.getFieldErrors();
         return ResponseEntity.badRequest().body(erros.stream().map(DadosBadRequest::new).toList());
     }

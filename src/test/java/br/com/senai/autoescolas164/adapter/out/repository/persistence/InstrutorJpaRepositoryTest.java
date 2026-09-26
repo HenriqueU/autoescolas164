@@ -1,9 +1,8 @@
 package br.com.senai.autoescolas164.adapter.out.repository.persistence;
 
 import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
+import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrucaoEntity;
 import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrutorEntity;
-import br.com.senai.autoescolas164.application.core.domain.Aluno;
-import br.com.senai.autoescolas164.application.core.domain.Instrucao;
 import br.com.senai.autoescolas164.shared.vo.endereco.Endereco;
 import br.com.senai.autoescolas164.shared.vo.enums.Especialidade;
 import org.junit.jupiter.api.DisplayName;
@@ -24,71 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 public class InstrutorJpaRepositoryTest {
-    LocalDateTime proxSegundaAs10 = LocalDateTime.now()
-            .with(TemporalAdjusters.next(
-                    DayOfWeek.MONDAY)
-            )
-            .withHour(10)
-            .withMinute(0)
-            .withSecond(0)
-            .withNano(0);
-
-    Aluno aluno = cadastrarAluno();
-
-    private Endereco dadosEndereco() {
-        return new Endereco(
-                "Rua Teste",
-                "000",
-                "Casa dos Fundos",
-                "Vila Teste",
-                "Test CIty",
-                "AP",
-                "00000-000"
-        );
-
-    }
-    private AlunoEntity cadastrarAluno(String nome, String telefone, String email, String cpf, Endereco endereco) {
-        Aluno aluno = new Aluno(nome, cpf, email, telefone, endereco) {
-
-        }
-    }
-
-    InstrutorEntity instrutor = cadastrarInstrutor(
-            "Instrutor Teste",
-            "instrutorteste@gmail.com.br",
-            "(11) 91234-5678",
-            "0234567890",
-            "72",
-            Especialidade.MOTOS
-    );
-
-    private InstrutorEntity cadastrarInstrutor(
-            String nome,
-            String email,
-            String numeroDeTelefone,
-            String cnh,
-            String number,
-            Especialidade especialidade) {
-        InstrutorEntity instrutor = new InstrutorEntity(
-                null,
-                nome,
-                email,
-                numeroDeTelefone,
-                cnh,
-                true,
-                Especialidade.MOTOS,
-                Endereco endereco
-        );
-    }
-
-    void agendarInstrucao(
-            aluno,
-            instrutor,
-            proxSegundaAs10
-            ) {
-
-    }
-
     @Autowired
     InstrutorJpaRepository repository;
 
@@ -98,21 +32,140 @@ public class InstrutorJpaRepositoryTest {
     @Test
     @DisplayName("Expectativa: retornar null quando instrutor não está disponível.")
     void escolherInstrutorAleatorioDisponivelCenario1() {
-        //When
-        InstrutorEntity instrutorDisponivel = repository.escolherInstrutorAleatorioDisponivel(Especialidade.MOTOS, proxSegundaAs10);
+        LocalDateTime proximaSegundaAs10 = LocalDateTime
+                .now()
+                .with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+                .withHour(10)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
 
-        //Act
+        //cadastrar aluno
+        AlunoEntity aluno = cadastrarAluno(
+                "Aluno Teste",
+                "alunoteste@email.com.br",
+                "(11) 98765-4321",
+                "12345678901"
+        );
+
+        //cadastrar instrutor
+        InstrutorEntity instrutor = cadastrarInstrutor(
+                "Instrutor Teste",
+                "instrutorteste@email.com.br",
+                "(11) 91234-5678",
+                "01234567890",
+                Especialidade.MOTOS
+        );
+
+        //agendar instrução
+        agendarInstrucao(
+                aluno,
+                instrutor,
+                proximaSegundaAs10
+        );
+
+        //when or act
+        InstrutorEntity instrutorDisponivel = repository
+                .escolherInstrutorAleatorioDisponivel(
+                        Especialidade.MOTOS,
+                        proximaSegundaAs10
+                );
+        //then or assert
         assertThat(instrutorDisponivel).isNull();
     }
 
-    private void agendarInstrutor(
+    @Test
+    @DisplayName("Expectativa: retornar o instrutor quando não está ocupado.")
+    void escolherInstrutorAleatorioDisponivelCenario2() {
+        LocalDateTime proximaSegundaAs10 = LocalDateTime
+                .now()
+                .with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+                .withHour(10)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        //cadastrar instrutor
+        InstrutorEntity instrutor = cadastrarInstrutor(
+                "Instrutor Teste",
+                "instrutorteste@email.com.br",
+                "(11) 91234-5678",
+                "01234567890",
+                Especialidade.MOTOS
+        );
+
+        //when or act
+        InstrutorEntity instrutorDisponivel = repository
+                .escolherInstrutorAleatorioDisponivel(
+                        Especialidade.MOTOS,
+                        proximaSegundaAs10
+                );
+        //then or assert
+        assertThat(instrutorDisponivel).isEqualTo(instrutor);
+    }
+
+    private Endereco dadosEndereco() {
+        return new Endereco(
+                "Rua Teste",
+                "000",
+                "Casa dos Fundos",
+                "Vila Teste",
+                "TestCity",
+                "AB",
+                "00000-000"
+        );
+    }
+
+    private AlunoEntity cadastrarAluno(
+            String nome,
+            String email,
+            String telefone,
+            String cpf) {
+        AlunoEntity aluno = new AlunoEntity(
+                null,
+                nome,
+                email,
+                telefone,
+                cpf,
+                true,
+                dadosEndereco()
+        );
+        entityManager.persist(aluno);
+        return aluno;
+    }
+
+    private InstrutorEntity cadastrarInstrutor(
+            String nome,
+            String email,
+            String telefone,
+            String cnh,
+            Especialidade especialidade) {
+        InstrutorEntity instrutor = new InstrutorEntity(
+                null,
+                nome,
+                email,
+                telefone,
+                cnh,
+                true,
+                especialidade,
+                dadosEndereco()
+        );
+        entityManager.persist(instrutor);
+        return instrutor;
+    }
+
+    private void agendarInstrucao(
             AlunoEntity aluno,
             InstrutorEntity instrutor,
             LocalDateTime dataHora
-    ) {
-        Instrucao instrucao = new Instrucao(null, aluno, instrutor, dataHora, true);
+        ) {
+        InstrucaoEntity instrucao = new InstrucaoEntity(
+                null,
+                aluno,
+                instrutor,
+                dataHora,
+                true
+        );
         entityManager.persist(instrucao);
     }
 }
-
-

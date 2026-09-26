@@ -1,0 +1,22 @@
+<configuration>
+    <property
+            name="LOG_PATTERN"
+            value="%d{dd/mm/yyyy - HH:mm} %-5level [%thread] %logger{36}:%line - %msg%n"
+    />
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <enconder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </enconder>
+    </appender>
+    <logger
+            name="br.senai.autoescolas164.application.service"
+            level="DEBUG"
+    />
+    <logger
+            name="org.springframework"
+            level="INFO"
+    />
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

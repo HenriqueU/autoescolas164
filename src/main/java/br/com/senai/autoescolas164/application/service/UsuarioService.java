@@ -9,6 +9,9 @@ import br.com.senai.autoescolas164.application.core.domain.Usuario;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +39,7 @@ public class UsuarioService {
     }*/
 
     //Get by ID
+    @Cacheable(value = "usuarios", key = "#id")
     @Transactional(readOnly = true)
     public @Nullable DadosDetalhamentoUsuario detalharUsuario(Long id) {
         Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do usuário não encontrado!"));
@@ -43,6 +47,7 @@ public class UsuarioService {
     }
 
     //Put
+    @CachePut(value = "usuarios", key = "dados.id()")
     @Transactional
     public DadosDetalhamentoUsuario atualizarUsuario(DadosAtualizacaoUsuario dados) {
         Usuario usuario = repository.findById(dados.id()).orElseThrow(() -> new RuntimeException("ID do usuário não encontrado!"));
@@ -56,6 +61,7 @@ public class UsuarioService {
     }
 
     //Delete
+    @CacheEvict(value = "usuarios", key = "#id")
     @Transactional
     public void excluirUsuario(Long id) {
         Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do usuário não encontrado!"));

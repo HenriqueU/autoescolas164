@@ -23,6 +23,8 @@ import br.com.senai.autoescolas164.exception.type.InstrutorNotFoundException;
 import br.com.senai.autoescolas164.adapter.out.repository.InstrutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,16 +43,31 @@ public class AgendaDeInstrucoes {
     private final AlunoEntityMapper alunoEntityMapper;
     private final InstrucaoMapper mapper;
 
+    private static final Logger log = LoggerFactory.getLogger(AgendaDeInstrucoes.class);
+
     //POST
     public DadosDetalhamentoAgendamento agendar(DadosAgendamento dados) {
+        log.info(
+                "Agendamento iniciado para Aluno: {}, Instrutor: {}, Data:{}",
+                dados.idAluno(), dados.idInstrutor(), dados.dataHora()
+        );
         if (!alunoRepository.existsById(dados.idAluno())) {
+            log.warn(
+                    "Tentativa de agendamento para aluno inexistente! Aluno: {}",
+                    dados.idAluno()
+            );
             throw new AlunoNotFoundException("ID do aluno informado não existe!");
         }
         if (dados.idInstrutor() != null && !instrutorRepository.existsById(dados.idInstrutor())) {
+            log.warn(
+                    "Tentativa de agendamento com instrutor inexistente! Instrutor: {}",
+                    dados.idInstrutor()
+            );
             throw new InstrutorNotFoundException("ID do instrutor informado não existe!");
         }
 
         //Validações
+        log.debug("Executando os validadores do agendamento...");
         validadoresAgendamento.forEach(validador -> validador.validar(dados));
 
         Aluno aluno = alunoRepository.getReferenceById(dados.idAluno());
@@ -66,6 +83,7 @@ public class AgendaDeInstrucoes {
                 true
         );
         Instrucao salva = repository.save(instrucao);
+        log.info("Instrução agendada com sucesso!");
         return new DadosDetalhamentoAgendamento(salva);
     }
 

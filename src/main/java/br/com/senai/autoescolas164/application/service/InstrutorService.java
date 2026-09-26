@@ -9,18 +9,27 @@ import br.com.senai.autoescolas164.adapter.out.repository.InstrutorRepository;
 import br.com.senai.autoescolas164.application.core.domain.Instrutor;
 import br.com.senai.autoescolas164.shared.vo.endereco.mapper.EnderecoMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//@Slf4j = Anotação do lombok para logs, caso não utilize arquitetura hexagonal
 @Service
 @RequiredArgsConstructor
 public class InstrutorService {
     private final InstrutorRepository repository;
     private final InstrutorMapper mapper;
     private final EnderecoMapper enderecoMapper;
+
+    private static final Logger log = LoggerFactory.getLogger(InstrutorService.class); //Responsável pelos logs na classe InstrutorService
 
     //Post
     @Transactional
@@ -39,8 +48,10 @@ public class InstrutorService {
     }
 
     //Get by ID
+    @Cacheable(value = "instrutores", key = "#id")
     @Transactional(readOnly = true)
     public @Nullable DadosDetalhamentoInstrutor detalharInstrutor(Long id) {
+        log.info("Consultando os dados do instrutor no banco de dados...");
         Instrutor instrutor = repository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe"));
@@ -48,6 +59,7 @@ public class InstrutorService {
     }
 
     //Put
+    @CachePut(value = "instrutores", key = "#dados.id()")
     @Transactional
     public DadosDetalhamentoInstrutor atualizarInstrutor(DadosAtualizacaoInstrutor dados) {
         Instrutor instrutor = repository
@@ -65,6 +77,7 @@ public class InstrutorService {
     }
 
     //Delete
+    @CacheEvict(value = "instrutores", key = "#id")
     @Transactional
     public void excluirInstrutor(Long id) {
         Instrutor instrutor = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do instrutor informado não existe!"));

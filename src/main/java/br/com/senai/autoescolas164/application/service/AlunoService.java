@@ -11,6 +11,9 @@ import br.com.senai.autoescolas164.shared.vo.endereco.mapper.EnderecoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,7 @@ public class AlunoService {
     }
 
     //Get by ID
+    @Cacheable(value = "alunos", key = "#id")
     @Transactional(readOnly = true)
     public @Nullable DadosDetalhamentoAluno detalharAluno(Long id) {
         Aluno aluno = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do aluno informado não existe!"));
@@ -47,6 +51,7 @@ public class AlunoService {
     }
 
     //Put
+    @CachePut(value = "alunos", key = "dados.id()")
     @Transactional
     public @Nullable DadosDetalhamentoAluno atualizarAluno(@Valid DadosAtualizacaoAluno dados) {
         Aluno aluno = repository.findById(dados.id()).orElseThrow(() -> new RuntimeException("ID do aluno informado não existe!"));
@@ -61,6 +66,7 @@ public class AlunoService {
     }
 
     //Delete
+    @CacheEvict(value = "alunos", key = "#id")
     @Transactional
     public void excluirAluno(Long id) {
         Aluno aluno = repository.findById(id).orElseThrow(() -> new RuntimeException("ID do aluno informado não existe!"));
