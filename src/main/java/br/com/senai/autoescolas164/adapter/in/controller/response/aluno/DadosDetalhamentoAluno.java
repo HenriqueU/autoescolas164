@@ -10,6 +10,7 @@ public record DadosDetalhamentoAluno(
         String cpf,
         String email,
         String telefone,
-        DadosEndereco endereco
+        DadosEndereco endereco,
+        boolean ativo
 ) {
 }

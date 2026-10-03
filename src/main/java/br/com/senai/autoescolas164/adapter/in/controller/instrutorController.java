@@ -1,5 +1,6 @@
 package br.com.senai.autoescolas164.adapter.in.controller;
 
+import br.com.senai.autoescolas164.adapter.in.controller.assembler.instrutorAssembler;
 import br.com.senai.autoescolas164.adapter.in.controller.request.instrutor.DadosAtualizacaoInstrutor;
 import br.com.senai.autoescolas164.adapter.in.controller.request.instrutor.DadosCadastroInstrutor;
 import br.com.senai.autoescolas164.adapter.in.controller.response.instrutor.DadosDetalhamentoInstrutor;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,25 +38,28 @@ public class instrutorController implements StdFeaturePort<
         > {
 
     private final InstrutorService service;
+    private final instrutorAssembler assembler;
 
     @Override
     @PostMapping
-    public ResponseEntity<DadosDetalhamentoInstrutor> cadastrar(@RequestBody @Valid DadosCadastroInstrutor dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<EntityModel<DadosDetalhamentoInstrutor>> cadastrar(@RequestBody @Valid DadosCadastroInstrutor dados, UriComponentsBuilder uriBuilder) {
         DadosDetalhamentoInstrutor dto = service.cadastrarInstrutor(dados);
         URI uri = uriBuilder.path("/instrutores/{id}").buildAndExpand(dto).toUri();
-        return ResponseEntity.created(uri).body(dto);
+        return ResponseEntity.created(uri).body(assembler.toCreate(dto));
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<Page<DadosListagemInstrutor>> listar(@PageableDefault(size=10, sort="nome") Pageable paginacao) {
-        return ResponseEntity.ok(service.listarInstrutores(paginacao));
+    public ResponseEntity<PagedModel<Page<DadosListagemInstrutor>>> listar(@PageableDefault(size=10, sort="nome") Pageable paginacao) {
+        Page page = service.listarInstrutores(paginacao);
+        return ResponseEntity.ok(assembler.toList(page));
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<DadosDetalhamentoInstrutor> detalhar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.detalharInstrutor(id));
+    public ResponseEntity<EntityModel<DadosDetalhamentoInstrutor>> detalhar(@PathVariable Long id) {
+        DadosDetalhamentoInstrutor dto = service.detalharInstrutor(id);
+        return ResponseEntity.ok(assembler.toDetail(dto));
     }
 
     @Override

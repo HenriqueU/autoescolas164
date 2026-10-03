@@ -30,7 +30,8 @@ public class AlunoMapper {
                 aluno.getCpf(),
                 aluno.getEmail(),
                 aluno.getTelefone(),
-                enderecoMapper.toDto(aluno.getEndereco())
+                enderecoMapper.toDto(aluno.getEndereco()),
+                aluno.isAtivo()
         );
     }
 
