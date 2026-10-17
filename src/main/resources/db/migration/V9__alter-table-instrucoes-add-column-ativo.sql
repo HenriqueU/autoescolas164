@@ -1,0 +1,1 @@
+ALTER TABLE instrucoes ADD ativo tinyint DEFAULT 1;

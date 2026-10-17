@@ -1,0 +1,128 @@
+package br.com.senai.autoescolas164.application.service;
+
+import br.com.senai.autoescolas164.adapter.in.controller.mapper.InstrucaoMapper;
+import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAgendamento;
+import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAtualizacaoAgendamento;
+import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosDetalhamentoAgendamento;
+import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosListagemAgendamento;
+import br.com.senai.autoescolas164.adapter.out.gateway.notification.NotificationClient;
+import br.com.senai.autoescolas164.adapter.out.repository.InstrucaoRepository;
+import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
+import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrutorEntity;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.AlunoEntityMapper;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.InstrucaoEntityMapper;
+import br.com.senai.autoescolas164.adapter.out.repository.mapper.InstrutorEntityMapper;
+import br.com.senai.autoescolas164.application.core.domain.Instrucao;
+import br.com.senai.autoescolas164.exception.type.InstrucaoNotFound;
+import br.com.senai.autoescolas164.exception.type.ValidacaoException;
+import br.com.senai.autoescolas164.application.core.specs.ValidadorAgendamento;
+import br.com.senai.autoescolas164.application.core.domain.Aluno;
+import br.com.senai.autoescolas164.exception.type.AlunoNotFoundException;
+import br.com.senai.autoescolas164.adapter.out.repository.AlunoRepository;
+import br.com.senai.autoescolas164.application.core.domain.Instrutor;
+import br.com.senai.autoescolas164.exception.type.InstrutorNotFoundException;
+import br.com.senai.autoescolas164.adapter.out.repository.InstrutorRepository;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class AgendaDeInstrucoes {
+    private final AlunoRepository alunoRepository;
+    private final InstrutorRepository instrutorRepository;
+    private final InstrucaoRepository repository;
+    private final List<ValidadorAgendamento> validadoresAgendamento;
+    private final InstrutorEntityMapper instrutorEntityMapper;
+    private final AlunoEntityMapper alunoEntityMapper;
+    private final InstrucaoMapper mapper;
+    private final NotificationClient notificationClient;
+
+    private static final Logger log = LoggerFactory.getLogger(AgendaDeInstrucoes.class);
+
+    //POST
+    public DadosDetalhamentoAgendamento agendar(DadosAgendamento dados) {
+        log.info(
+                "Agendamento iniciado para Aluno: {}, Instrutor: {}, Data:{}",
+                dados.idAluno(), dados.idInstrutor(), dados.dataHora()
+        );
+        if (!alunoRepository.existsById(dados.idAluno())) {
+            log.warn(
+                    "Tentativa de agendamento para aluno inexistente! Aluno: {}",
+                    dados.idAluno()
+            );
+            throw new AlunoNotFoundException("ID do aluno informado não existe!");
+        }
+        if (dados.idInstrutor() != null && !instrutorRepository.existsById(dados.idInstrutor())) {
+            log.warn(
+                    "Tentativa de agendamento com instrutor inexistente! Instrutor: {}",
+                    dados.idInstrutor()
+            );
+            throw new InstrutorNotFoundException("ID do instrutor informado não existe!");
+        }
+
+        //Validações
+        log.debug("Executando os validadores do agendamento...");
+        validadoresAgendamento.forEach(validador -> validador.validar(dados));
+
+        Aluno aluno = alunoRepository.getReferenceById(dados.idAluno());
+        Instrutor instrutor = escolherInstrutor(dados);
+        if (instrutor == null) {
+            throw new ValidacaoException("Não existe instrutor disponível para a dara/hora informada");
+        }
+        Instrucao instrucao = new Instrucao(
+                null,
+                alunoEntityMapper.toEntity(aluno),
+                instrutorEntityMapper.toEntity(instrutor),
+                dados.dataHora(),
+                true
+        );
+        Instrucao salva = repository.save(instrucao);
+        log.info("Instrução agendada com sucesso!");
+        notificationClient.notificarAgendamento(salva);
+        return new DadosDetalhamentoAgendamento(salva);
+    }
+
+    private Instrutor escolherInstrutor(DadosAgendamento dados) {
+        if (dados.idInstrutor() != null) {
+            instrutorRepository.getReferenceById(dados.idInstrutor());
+        }
+        if (dados.especialidade() == null) {
+            throw new ValidacaoException("Especialidade é campo obrigatório caso o instrutor não seja informado!");
+        }
+        return instrutorRepository.escolherInstrutorAleatorioDisponivel(
+                dados.especialidade(),
+                dados.dataHora()
+        );
+    }
+
+    //GET
+    @Transactional
+    public @Nullable Page<DadosDetalhamentoAgendamento> listarAgendamento(Pageable paginacao) {
+        return repository.findAllByAtivoTrue(paginacao).map(mapper::toDetailDto);
+    }
+
+    //GET BY ID
+    @Transactional(readOnly = true)
+    public @Nullable DadosDetalhamentoAgendamento detalharAgendamento(Long id) {
+        Instrucao instrucao = repository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("ID do agendamento não existe"));
+        return mapper.toDetailDto(instrucao);
+    }
+
+    //DELETE
+    @Transactional
+    public void excluirInstrucao(Long id) {
+        Instrucao instrucao = repository.findById(id).orElseThrow(() -> new InstrucaoNotFound("Agendamento não encontrado!"));
+        instrucao.excluir();
+        repository.save(instrucao);
+    }
+}

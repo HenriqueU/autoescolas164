@@ -1,0 +1,76 @@
+### Arquivos de build ###
+HELP.md
+target/
+build/
+tmp/
+*.tmp
+
+### Maven ###
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.mvn/timing.properties
+
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Gradle ###
+.gradle/
+!**/src/main/**/build
+!**/src/test/**/build
+
+### Arquivos de Log ###
+*.log
+logs/
+spring.log
+
+### Configurações e Arquivos sensíveis
+.env
+*.env
+*.key
+*.pem
+*.crd
+*.p12
+
+application-*.yml
+application-*.yaml
+application-*.properties
+!application.properties
+!application-prod.properties
+!application-dev.properties
+
+### STS ###
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Windows ###
+Thumbs.db
+Desktop.ini
+
+### Mac ###
+.DS_Store
+
+### Docker ###
+**/db_data/
+docker-volume
