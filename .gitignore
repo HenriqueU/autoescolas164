@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### Arquivos de build ###
 HELP.md
 target/
@@ -44,6 +45,20 @@ application-*.properties
 .factorypath
 .project
 .settings/
+=======
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 .springBeans
 .sts4-cache
 
@@ -52,7 +67,10 @@ application-*.properties
 *.iws
 *.iml
 *.ipr
+<<<<<<< HEAD
 out/
+=======
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 
 ### NetBeans ###
 /nbproject/private/
@@ -60,6 +78,7 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
+<<<<<<< HEAD
 
 ### VS Code ###
 .vscode/
@@ -74,3 +93,11 @@ Desktop.ini
 ### Docker ###
 **/db_data/
 docker-volume
+=======
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456

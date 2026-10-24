@@ -5,7 +5,10 @@ import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.Dados
 import br.com.senai.autoescolas164.adapter.in.controller.request.instrucao.DadosAtualizacaoAgendamento;
 import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosDetalhamentoAgendamento;
 import br.com.senai.autoescolas164.adapter.in.controller.response.instrucao.DadosListagemAgendamento;
+<<<<<<< HEAD
 import br.com.senai.autoescolas164.adapter.out.gateway.notification.NotificationClient;
+=======
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 import br.com.senai.autoescolas164.adapter.out.repository.InstrucaoRepository;
 import br.com.senai.autoescolas164.adapter.out.repository.entity.AlunoEntity;
 import br.com.senai.autoescolas164.adapter.out.repository.entity.InstrutorEntity;
@@ -43,7 +46,10 @@ public class AgendaDeInstrucoes {
     private final InstrutorEntityMapper instrutorEntityMapper;
     private final AlunoEntityMapper alunoEntityMapper;
     private final InstrucaoMapper mapper;
+<<<<<<< HEAD
     private final NotificationClient notificationClient;
+=======
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 
     private static final Logger log = LoggerFactory.getLogger(AgendaDeInstrucoes.class);
 
@@ -86,7 +92,10 @@ public class AgendaDeInstrucoes {
         );
         Instrucao salva = repository.save(instrucao);
         log.info("Instrução agendada com sucesso!");
+<<<<<<< HEAD
         notificationClient.notificarAgendamento(salva);
+=======
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
         return new DadosDetalhamentoAgendamento(salva);
     }
 

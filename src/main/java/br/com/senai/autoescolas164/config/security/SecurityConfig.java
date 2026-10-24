@@ -1,17 +1,25 @@
 package br.com.senai.autoescolas164.config.security;
 
 import br.com.senai.autoescolas164.config.security.filter.SecurityFilter;
+<<<<<<< HEAD
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+=======
+import org.springframework.beans.factory.annotation.Autowired;
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+<<<<<<< HEAD
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+=======
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+<<<<<<< HEAD
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -32,6 +41,12 @@ public class SecurityConfig {
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
+=======
+public class SecurityConfig {
+
+    @Autowired
+    private SecurityFilter securityFilter;
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
@@ -39,7 +54,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();
                     configuration.setAllowedOriginPatterns(
+<<<<<<< HEAD
                             Arrays.asList(allowedOrigins.split(","))
+=======
+                            Arrays.asList(
+                                    "http://localhost:3000",
+                                    "http://127.0.0.1:3000",
+                                    "http://localhost:5500",
+                                    "http://127.0.0.1:5500"
+                            )
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
                     );
                     configuration.setAllowedMethods(List.of(
                             "GET",

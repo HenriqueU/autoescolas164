@@ -4,9 +4,15 @@
             value="%d{dd/mm/yyyy - HH:mm} %-5level [%thread] %logger{36}:%line - %msg%n"
     />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+<<<<<<< HEAD
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
+=======
+        <enconder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </enconder>
+>>>>>>> aeb176229f6fec8540af56966a434feee294e456
     </appender>
     <logger
             name="br.senai.autoescolas164.application.service"
